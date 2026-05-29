@@ -3,15 +3,9 @@ pipeline {
 
     stages {
 
-        stage('Clone') {
-            steps {
-                git branch: 'main',
-                url: 'https://github.com/YOUR_USERNAME/SecureScan.git'
-            }
-        }
-
         stage('Build Scanner') {
             steps {
+                sh 'mkdir -p build'
                 sh 'g++ scanner.cpp -o build/scanner'
             }
         }
@@ -24,19 +18,22 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t securescan .'
+                sh 'sudo docker build -t securescan .'
             }
         }
 
         stage('Deploy Container') {
             steps {
                 sh '''
-                docker stop securescan || true
-                docker rm securescan || true
-                docker run -d -p 5000:5000 --name securescan securescan
+                sudo docker stop securescan || true
+                sudo docker rm securescan || true
+
+                sudo docker run -d \
+                -p 5000:5000 \
+                --name securescan \
+                securescan
                 '''
             }
         }
     }
 }
-
