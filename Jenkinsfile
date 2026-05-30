@@ -18,21 +18,18 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -t securescan .'
-            }
+                sh 'docker build -t securescan .'          
+  }
         }
 
         stage('Deploy Container') {
             steps {
                 sh '''
-                sudo docker stop securescan || true
-                sudo docker rm securescan || true
+                docker stop securescan || true
+                docker rm securescan || true
 
-                sudo docker run -d \
-                -p 5000:5000 \
-                --name securescan \
-                securescan
-                '''
+              docker run -d -p 5000:5000 --name securescan securescan             
+   '''
             }
         }
     }
